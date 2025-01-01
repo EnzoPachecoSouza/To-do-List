@@ -4,29 +4,72 @@ let tasks = [
     {id: 3, description: "Escovar os Dentes", checked: false},
 ]
 
+const createTaskListItem = (task, checkbox) => {
+    const list = document.getElementById("to-do-list");
+    const toDo = document.createElement("li");
+
+    toDo.id = task.id;
+    toDo.appendChild(checkbox);
+
+    list.appendChild(toDo);
+
+    return toDo;
+}
+
 const getCheckBoxInput = ({id, description, checked}) => {
-    const checkBox = document.createElement("input");//CRIANDO O ELEMENTO DE INPUT
+    const checkbox = document.createElement("input");//CRIANDO O ELEMENTO DE INPUT
     const label = document.createElement("label");//CRIANDO O ELEMENTO DE LABEL
     const wrapper = document.createElement("div");//CRIANDO O ELEMENTO DE DIV (deixando esses 2 elemtnso dentro da DIV)
     const chackBoxId = `${id}-checkbox`;
 
-    checkBox.type = "checkbox";
-    checkBox.id = chackBoxId;
-    checkBox.checked = checked;
+    checkbox.type = "checkbox";
+    checkbox.id = chackBoxId;
+    checkbox.checked = checked || false;
 
     label.textContent = description;
     label.htmlFor = chackBoxId;
 
     wrapper.className = 'checkbox-label-container';
 
-    wrapper.appendChild(checkBox);
+    wrapper.appendChild(checkbox);
     wrapper.appendChild(label);
 
     return wrapper;
 }
 
+const getNewTaskId = () => {
+    const lastId = tasks[tasks.length - 1]?.id;
+    return lastId ? lastId + 1 : 1;
+}
+
+const getNewTaskData = (event) => {
+    const description = event.target.elements.description.value;
+    const id = getNewTaskId();
+
+    return {description, id};
+}
+
+const createTask = (event) => {
+    event.preventDefault();
+
+    const newTaskData = getNewTaskData(event); // Chama a função `getNewTaskData` para obter os dados da nova tarefa.
+    
+    const checkbox = getCheckBoxInput(newTaskData); // Cria o checkbox com os dados da nova tarefa.
+    createTaskListItem(newTaskData, checkbox); // Adiciona o novo item à lista.
+
+    // Atualiza o array `tasks` com a nova tarefa.
+    tasks = [...tasks, { 
+        id: newTaskData.id, 
+        description: newTaskData.description, 
+        checked: false 
+    }];
+}
+
 //window.onload - O que está dentro da função atribuída ao window.onload será executado após o carregamento completo da página.
 window.onload = function() {
+    const form = document.getElementById("create-to-do-form");
+    form.addEventListener("submit", createTask);
+    
     tasks.forEach(function(task) { //O método forEach é usado para percorrer cada item no array tasks. Para cada tarefa no array, ele executa a função que está dentro do forEach
         const checkbox = getCheckBoxInput(task);
 
