@@ -12,6 +12,20 @@ const removeTask = (taskId) => {
         .removeChild(document.getElementById(taskId));
 }
 
+const removeDoneTasks = () => {
+    const tasksToRemove = tasks
+    .filter(({checked}) => checked)
+    .map(({id}) => id);
+
+    tasks = tasks.filter(({checked}) => !checked);
+
+    tasksToRemove.forEach((taskToRemove) => {
+        document
+            .getElementById("to-do-list")
+            .removeChild(document.getElementById(taskToRemove));
+    });
+}
+
 const createTaskListItem = (task, checkbox) => {
     const list = document.getElementById("to-do-list");
     const toDo = document.createElement("li");
@@ -32,6 +46,21 @@ const createTaskListItem = (task, checkbox) => {
     return toDo;
 }
 
+const onCheckboxClick = (event) => {
+    const [id] = event.target.id.split("-");
+
+    tasks = tasks.map((task) => {
+        if(parseInt(task.id) === parseInt(id)) {
+            return {
+                ...task,
+                checked: event.target.checked
+            }
+        }
+
+        return task;
+    })
+}
+
 const getCheckBoxInput = ({id, description, checked}) => {
     const checkbox = document.createElement("input");//CRIANDO O ELEMENTO DE INPUT
     const label = document.createElement("label");//CRIANDO O ELEMENTO DE LABEL
@@ -41,6 +70,7 @@ const getCheckBoxInput = ({id, description, checked}) => {
     checkbox.type = "checkbox";
     checkbox.id = chackBoxId;
     checkbox.checked = checked || false;
+    checkbox.addEventListener("change", onCheckboxClick);
 
     label.textContent = description;
     label.htmlFor = chackBoxId;
